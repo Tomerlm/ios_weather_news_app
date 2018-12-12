@@ -10,7 +10,28 @@ import CoreLocation
 
 
 
-class OptionsScreen: UIViewController , CLLocationManagerDelegate {
+class OptionsScreen: UIViewController , CLLocationManagerDelegate{
+    
+    func testSemaph(){
+        let semaphore = DispatchSemaphore(value: 0)
+        let queue = DispatchQueue.global()
+        let n = 9
+        for i in 0..<n {
+            queue.async {
+                self.printThread()
+                print("run \(i)")
+                sleep(UInt32(i))
+                semaphore.signal()
+            }
+        }
+        print("wait")
+        for i in 0..<n {
+            semaphore.wait()
+            print("completed \(i)")
+        }
+        print("done")
+
+    }
     
     typealias jsonCompletionHandler = (_ json: JSON? , _ err: Error?) -> Void
     
@@ -26,6 +47,9 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate {
     
     var currentCountry: String? = ""
     
+    
+    var workItem : DispatchWorkItem?
+    
     let countryCodeHandler = CountryCodes()
     
     @IBOutlet weak var newBtnLayout: UIButton!
@@ -34,7 +58,14 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate {
     @IBOutlet weak var fromMapBtn: UIButton!
     
     override func viewDidLoad() {
-        tempImage.isHidden = true
+        DispatchQueue.global().async {
+            self.testSemaph()
+            self.printThread()
+            }
+        
+
+        self.printThread()
+        tempImage.isHidden = false
         progressBar.style = .whiteLarge
         progressBar.stopAnimating()
         progressBar.hidesWhenStopped = true
@@ -210,6 +241,7 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate {
                                 }
                                 else{
                                     DispatchQueue.main.async {
+                                        self.printThread()
                                         self.progressBar.stopAnimating()
                                         self.tempImage.isHidden = false
                                         print("downloaded image from url: \(urlString)")
@@ -282,6 +314,10 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate {
         button.layer.shadowOpacity = 0.5
         button.layer.shadowOffset = CGSize(width: 0, height: 0)
         
+    }
+    
+    func printThread(){
+        print("current thread on \(#function) is \(Thread.current) ")
     }
     
     

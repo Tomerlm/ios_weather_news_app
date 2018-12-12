@@ -103,18 +103,19 @@ class ReportViewController: UIViewController , UITextViewDelegate{
     
     // TextViewDelegate functions
     public func textViewDidChange(_ textView: UITextView) {
-        let size = CGSize(width: view.frame.width - VIEW_OFFSET, height: .infinity)
+        let size = CGSize(width: view.frame.width - VIEW_OFFSET , height: .infinity)
         let estimatedSize = textView.sizeThatFits(size)
-        
         textView.constraints.forEach{(constraints) in
             if constraints.firstAttribute == .height{
                 constraints.constant = estimatedSize.height
-                if(estimatedSize.height > redMinHeight - VIEW_OFFSET){
-                    redViewHeight.constant = estimatedSize.height + VIEW_OFFSET
-                    if(redViewHeight.constant > greenMinHeight - VIEW_OFFSET){
-                        greenViewHeight.constant = redViewHeight.constant + VIEW_OFFSET
-                    }
-                }
+                greenView.setNeedsLayout()
+                
+//                if(estimatedSize.height > redMinHeight - VIEW_OFFSET){
+//                    redViewHeight.constant = estimatedSize.height + VIEW_OFFSET
+//                    if(redViewHeight.constant > greenMinHeight - VIEW_OFFSET){
+//                        greenViewHeight.constant = redViewHeight.constant + VIEW_OFFSET
+//                    }
+//                }
 
             }
         }
@@ -123,9 +124,6 @@ class ReportViewController: UIViewController , UITextViewDelegate{
         return true
     }
     
-    func changeConstraints(){
-        
-    }
 
     
 }
