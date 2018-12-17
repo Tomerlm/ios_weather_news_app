@@ -10,8 +10,7 @@ import CoreLocation
 
 
 
-class OptionsScreen: UIViewController , CLLocationManagerDelegate{
-    
+class OptionsScreen: UIViewController , CLLocationManagerDelegate {
     
     typealias jsonCompletionHandler = (_ json: JSON? , _ err: Error?) -> Void
     
@@ -27,27 +26,15 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
     
     var currentCountry: String? = ""
     
-    let DEGREE_MARK = "°"
-    
-    let isImageAnimating: Bool = true
-    
-    
-    var workItem : DispatchWorkItem?
-    
     let countryCodeHandler = CountryCodes()
     
     @IBOutlet weak var newBtnLayout: UIButton!
     @IBOutlet weak var customLocationBtn: UIButton!
     @IBOutlet weak var mLocationBtn: UIButton!
     @IBOutlet weak var fromMapBtn: UIButton!
-    @IBOutlet weak var animatingImage: UIImageView!
-    
-    @IBOutlet weak var weatherDisplayView: WeatherDisplayView!
     
     override func viewDidLoad() {
-        weatherDisplayView.isHidden = true
-        self.printThread()
-        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
+        tempImage.isHidden = true
         progressBar.style = .whiteLarge
         progressBar.stopAnimating()
         progressBar.hidesWhenStopped = true
@@ -100,7 +87,9 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
     
     
 
-
+    @IBOutlet weak var tempImage: UIImageView!
+    
+    @IBOutlet weak var weatherLabel: UILabel!
     
     @IBOutlet weak var progressBar: UIActivityIndicatorView!
     
@@ -132,8 +121,9 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
     
     @IBAction func actionBtn(_ sender: Any) {
         addressTextField.resignFirstResponder()
-
-        if addressTextField.text != "" || addressTextField.text != nil {
+        tempImage.isHidden = true
+        self.weatherLabel.isHidden = true
+        if weatherLabel.text != "" || weatherLabel.text != nil {
             let displayAddress = addressTextField.text!
             self.progressBar.startAnimating()
             fetchData(displayAddress)
@@ -200,22 +190,44 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
                     print("Bad Coordinates")
                 }
                 else{
-                    self.progressBar.stopAnimating()
                     var temp = jsonObj["currently"]["temperature"].rawString()!
-                    temp = self.toCelsius(fern: temp)
-                    var description = jsonObj["currently"]["icon"].description
-                    var feelsLike = jsonObj["currently"]["apparentTemperature"].rawString()!
-                    feelsLike = "Feels like: " + self.toCelsius(fern: feelsLike)
-                    var wind = jsonObj["currently"]["windSpeed"].rawString()!
-                    wind = self.roundString(str: wind) + " kmH"
-                    var precipitation = jsonObj["currently"]["precipProbability"].rawString()!
-                    precipitation = self.roundString(str: precipitation) + "%"
-                    let mWeather = Weather(temperature: temp, description: description, precipitation: precipitation, wind: wind, feelsLike: feelsLike)
-                    self.weatherDisplayView.weather = mWeather
-                    self.weatherDisplayView.isHidden = false
-                    
-                    self.animateWeatherImage()
+                    let tempDouble = Double(temp)!
+                    let celsius = (tempDouble - 32)*(5/9)
+                    temp = String(celsius)
+                    temp = String(temp.prefix(4))
+                    self.getImage(){(json , err) in
+                        if let jsonObj = json {
+                            
+                            let urlString = jsonObj["links"]["download"].rawString()!
+                            let imageUrl = URL(string: urlString)
+                            let path = Bundle.main.path(forResource: "snoop", ofType: "gif")!
+                            let data = try! Data(contentsOf: URL(fileURLWithPath: path))
+                            self.tempImage.kf.indicatorType = .image(imageData: data)
+                            self.tempImage.kf.setImage(with: imageUrl, completionHandler: {
+                                (image, error, cacheType, imageUrl) in
+                                if (image == nil || error != nil){
+                                    print("error getting image")
+                                }
+                                else{
+                                    DispatchQueue.main.async {
+                                        self.progressBar.stopAnimating()
+                                        self.tempImage.isHidden = false
+                                        print("downloaded image from url: \(urlString)")
+                                        self.weatherLabel.text = "Temperature in \(displayAddress) : " + temp
+                                        self.weatherLabel.isHidden = false
+                                    }
 
+                                }
+
+                            })
+
+                            
+                        }
+                        else{
+                            print("error getting image: \(err)")
+                        }
+                        
+                    }
                 
                 }
             }
@@ -272,81 +284,12 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
         
     }
     
-    func printThread(){
-        print("current thread on \(#function) is \(Thread.current) ")
-    }
-    
-    func toCelsius(fern: String) -> String{
-        
-        let tempDouble = Double(fern)!
-        let celsius = round((tempDouble - 32)*(5/9))
-        let temp = String(celsius)
-        return temp + self.DEGREE_MARK
-        
-    }
-    
-    func roundString(str: String) -> String{
-        let roundWind = round(Double(str)!)
-        return String(roundWind)
-    }
-    
-    func animateWeatherImage(){
-        self.animatingImage.isHidden = false
-        UIView.animate(withDuration: 1, animations: {
-            self.animatingImage.transform = CGAffineTransform(rotationAngle: 360)
-            })
-    }
-    
-    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-        switch UIDevice.current.orientation{
-        case .portrait:
-            self.view.addBackground()
-            break
-        case .unknown:
-            break
-        case .portraitUpsideDown:
-            break
-        case .landscapeLeft:
-            
-            self.view.addBackground(imageName: "LrotatedBG.png")
-            break
-        case .landscapeRight:
-            
-            self.view.addBackground(imageName: "LrotatedBG.png")
-            break
-        case .faceUp:
-            break
-        case .faceDown:
-            break
-        }
-    }
-    
-    
-    
     
 
 }
 
-extension UIView {
-    func addBackground(imageName: String = "background.png", contentMode: UIView.ContentMode = .scaleToFill) {
-        // setup the UIImageView
-        let backgroundImageView = UIImageView(frame: UIScreen.main.bounds)
-        backgroundImageView.image = UIImage(named: imageName)
-        backgroundImageView.contentMode = contentMode
-        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+
         
-        addSubview(backgroundImageView)
-        sendSubviewToBack(backgroundImageView)
-        
-        // adding NSLayoutConstraints
-        let leadingConstraint = NSLayoutConstraint(item: backgroundImageView, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0)
-        let trailingConstraint = NSLayoutConstraint(item: backgroundImageView, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0)
-        let topConstraint = NSLayoutConstraint(item: backgroundImageView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0)
-        let bottomConstraint = NSLayoutConstraint(item: backgroundImageView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0)
-        
-        NSLayoutConstraint.activate([leadingConstraint, trailingConstraint, topConstraint, bottomConstraint])
-    }
-}
 
 
 

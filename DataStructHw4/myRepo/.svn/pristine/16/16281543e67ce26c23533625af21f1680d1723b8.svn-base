@@ -169,7 +169,6 @@ class NewsViewController: UIViewController , UITableViewDelegate , UITableViewDa
         }
     }
     
-    
     func startTimer(){
         timer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(NewsViewController.update), userInfo: nil, repeats: true)
     }
@@ -177,5 +176,4 @@ class NewsViewController: UIViewController , UITableViewDelegate , UITableViewDa
     @objc func update(){
         progressBar.progress+=0.02
     }
-    
 }
