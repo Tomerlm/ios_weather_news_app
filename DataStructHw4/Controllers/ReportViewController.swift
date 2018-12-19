@@ -64,8 +64,7 @@ class ReportViewController: UIViewController , UITextViewDelegate{
     }
 
     @IBAction func reportToMainSegue(_ sender: Any) {
-        self.performSegue(withIdentifier: "reportToMain", sender: self)
-        
+       // self.performSegue(withIdentifier: "reportToMain", sender: self)
     }
     
     func setTextViewLayout(textView: UITextView){
@@ -101,6 +100,7 @@ class ReportViewController: UIViewController , UITextViewDelegate{
         self.present(alert, animated: true, completion: nil)
     }
     
+    
     // TextViewDelegate functions
     public func textViewDidChange(_ textView: UITextView) {
         let size = CGSize(width: view.frame.width - VIEW_OFFSET , height: .infinity)
@@ -110,12 +110,6 @@ class ReportViewController: UIViewController , UITextViewDelegate{
                 constraints.constant = estimatedSize.height
                 greenView.setNeedsLayout()
                 
-//                if(estimatedSize.height > redMinHeight - VIEW_OFFSET){
-//                    redViewHeight.constant = estimatedSize.height + VIEW_OFFSET
-//                    if(redViewHeight.constant > greenMinHeight - VIEW_OFFSET){
-//                        greenViewHeight.constant = redViewHeight.constant + VIEW_OFFSET
-//                    }
-//                }
 
             }
         }

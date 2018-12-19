@@ -7,3 +7,12 @@
 //
 
 import Foundation
+import UIKit
+
+class MainNavController: UINavigationController {
+    
+    override func viewDidLoad(){
+        super.viewDidLoad()
+    }
+    
+}

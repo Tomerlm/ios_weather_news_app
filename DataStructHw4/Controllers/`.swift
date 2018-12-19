@@ -210,7 +210,8 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
                     feelsLike = "Feels like: " + self.toCelsius(fern: feelsLike)
                     var wind = jsonObj["currently"]["windSpeed"].rawString()!
                     wind = self.roundString(str: wind) + " kmH"
-                    var precipitation = jsonObj["currently"]["precipProbability"].rawString()!
+                    var precipitation = jsonObj["currently"]["precipProbability"].description
+                    print(precipitation)
                     precipitation = self.roundString(str: precipitation) + "%"
                     let mWeather = Weather(temperature: temp, description: description, precipitation: precipitation, wind: wind, feelsLike: feelsLike)
                     self.weatherDisplayView.weather = mWeather
