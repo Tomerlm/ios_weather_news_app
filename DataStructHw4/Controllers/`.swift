@@ -46,8 +46,7 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
     
     override func viewDidLoad() {
         weatherDisplayView.isHidden = true
-        self.printThread()
-        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
+        bgOrientationCheck()
         progressBar.style = .whiteLarge
         progressBar.stopAnimating()
         progressBar.hidesWhenStopped = true
@@ -72,7 +71,7 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
     
     
     @IBAction func reportViewButton(_ sender: Any) {
-                self.performSegue(withIdentifier: "mainToReportSegue", sender: self)
+                //self.performSegue(withIdentifier: "mainToReportSegue", sender: self)
         
     }
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -134,6 +133,9 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
         addressTextField.resignFirstResponder()
 
         if addressTextField.text != "" || addressTextField.text != nil {
+            if(self.weatherDisplayView.isHidden == false){
+                self.weatherDisplayView.isHidden = true
+            }
             let displayAddress = addressTextField.text!
             self.progressBar.startAnimating()
             fetchData(displayAddress)
@@ -231,19 +233,6 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
         return address.replacingOccurrences(of: " ", with: "+")
     }
     
-    private func getImage(completionHandler: @escaping jsonCompletionHandler){
-        let url = "https://api.unsplash.com/photos/random?client_id=a99603d4b1944706f22e3f0251674527b377666c6c732f57f8bd45689357aaa6"
-        Alamofire.request(url).responseJSON{ (response) in
-            switch response.result{
-            case .success(let data):
-                let jsonData = JSON(data)
-                completionHandler(jsonData, nil)
-            case .failure(let error):
-                completionHandler(nil, error)
-            }
-        }
-    }
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
@@ -280,6 +269,9 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
         
         let tempDouble = Double(fern)!
         let celsius = round((tempDouble - 32)*(5/9))
+        if celsius == 0.0 {
+            return "0"+self.DEGREE_MARK
+        }
         let temp = String(celsius)
         return temp + self.DEGREE_MARK
         
@@ -299,16 +291,16 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+        bgOrientationCheck()
+    }
+    
+    func bgOrientationCheck(){
         switch UIDevice.current.orientation{
         case .portrait:
             self.view.addBackground()
             if !self.animatingImage.isHidden{
                 self.animateWeatherImage()
             }
-            break
-        case .unknown:
-            break
-        case .portraitUpsideDown:
             break
         case .landscapeLeft:
             
@@ -327,6 +319,18 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
         case .faceUp:
             break
         case .faceDown:
+            break
+        case .unknown:
+            self.view.addBackground(imageName: "LrotatedBG.png")
+            if !self.animatingImage.isHidden{
+                self.animateWeatherImage()
+            }
+            break
+        case .portraitUpsideDown:
+            self.view.addBackground()
+            if !self.animatingImage.isHidden{
+                self.animateWeatherImage()
+            }
             break
         }
     }
