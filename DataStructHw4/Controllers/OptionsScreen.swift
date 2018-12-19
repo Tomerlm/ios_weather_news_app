@@ -292,15 +292,19 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
     
     func animateWeatherImage(){
         self.animatingImage.isHidden = false
-        UIView.animate(withDuration: 1, animations: {
-            self.animatingImage.transform = CGAffineTransform(rotationAngle: 360)
-            })
+        UIView.animate(withDuration: 2, delay: 0, options: [.curveLinear , .repeat ], animations: { () -> Void in
+            self.animatingImage.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
+        } , completion: nil)
+
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         switch UIDevice.current.orientation{
         case .portrait:
             self.view.addBackground()
+            if !self.animatingImage.isHidden{
+                self.animateWeatherImage()
+            }
             break
         case .unknown:
             break
@@ -309,10 +313,16 @@ class OptionsScreen: UIViewController , CLLocationManagerDelegate{
         case .landscapeLeft:
             
             self.view.addBackground(imageName: "LrotatedBG.png")
+            if !self.animatingImage.isHidden{
+                self.animateWeatherImage()
+            }
             break
         case .landscapeRight:
             
             self.view.addBackground(imageName: "LrotatedBG.png")
+            if !self.animatingImage.isHidden{
+                self.animateWeatherImage()
+            }
             break
         case .faceUp:
             break
