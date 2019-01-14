@@ -188,9 +188,10 @@ class SectionViewController: UIViewController, UIPageViewControllerDataSource , 
          (vc0 as! OptionsScreen).countryDelegate = self
         
          vc1 = storyboard.instantiateViewController(withIdentifier: "NewsVC")
+
         
          vc2 = storyboard.instantiateViewController(withIdentifier: "MapVC")
-        (vc0 as! Map).cooDelegate = self
+        (vc2 as! Map).cooDelegate = self
     
         
         pageController.setViewControllers([vc0!], direction: .forward, animated: false, completion: nil)
@@ -341,7 +342,7 @@ class SectionViewController: UIViewController, UIPageViewControllerDataSource , 
     func didChangeCountry(country: String){
         currentCountry = country
         let cc = CountryCodes()
-        (vc1 as! NewsViewController).currentCountry = cc.getCountryCode(country: country)
+        (vc1 as! NewsViewController).setNewCountryCode(cc: cc.getCountryCode(country: country))
     }
     
     func didChooseCoordinateFromMap(coordinate: Coordinate){

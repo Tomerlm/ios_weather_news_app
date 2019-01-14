@@ -14,13 +14,10 @@ class NewsViewController: UIViewController , UITableViewDelegate , UITableViewDa
     private var expanded: [ExpandedNews] = []
     
     
-    var currentCountry: String = "us"{
-        didSet{
-            getNews()
-        }
-    }
+    var currentCountry: String = "us"
+
     
-    var isInit: Bool = true
+    var didInit: Bool = false
     
     var selectedRowIndex = -1
     var thereIsExpandedCell: Bool = false
@@ -34,7 +31,7 @@ class NewsViewController: UIViewController , UITableViewDelegate , UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         getNews()
-        isInit = false
+        didInit = true
 
     }
      func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -111,11 +108,10 @@ class NewsViewController: UIViewController , UITableViewDelegate , UITableViewDa
     }
     
     func getNews(){
-        if(!isInit){
-            headlines = []
-            expanded = []
-            
-        }
+
+        headlines = []
+        expanded = []
+
         tableView.isHidden = true
         progressBar.isHidden = false
         startTimer()
@@ -168,6 +164,14 @@ class NewsViewController: UIViewController , UITableViewDelegate , UITableViewDa
         self.tableView.rowHeight = UITableView.automaticDimension
         
 
+    }
+    
+    func setNewCountryCode(cc: String){
+        currentCountry = cc
+        if !didInit {
+            return
+        }
+        getNews()
     }
     
     
