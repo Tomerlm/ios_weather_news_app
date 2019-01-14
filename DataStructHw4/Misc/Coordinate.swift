@@ -9,19 +9,15 @@
 import Foundation
 
 class Coordinate{
-    private var lng: String
-    private var lat: String
+     var lng: String
+     var lat: String
+    var address: String
     
-    init(lng: String , lat: String){
+    
+    init(lng: String , lat: String , address: String){
         self.lng = lng
         self.lat = lat
+        self.address = address
     }
     
-    func getLng() -> String{
-        return self.lng
-    }
-    
-    func getLat() -> String{
-        return self.lat
-    }
 }

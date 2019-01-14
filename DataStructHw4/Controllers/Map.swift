@@ -17,7 +17,7 @@ class Map: UIViewController , MKMapViewDelegate {
     var lastLng: String = "default"
     var lastAddress: String = "default"
     var currentCountry: String? = ""
-    
+    var cooDelegate: UIViewController? = nil
     var lastAnnotation: MKPointAnnotation? = nil;
     
     let geocoder = CLGeocoder()
@@ -40,6 +40,9 @@ class Map: UIViewController , MKMapViewDelegate {
         setUpButtonsConstraints()
         setButtonLayout(button: getBtnView)
         setButtonLayout(button: cancelBtnView)
+        
+        //setupMenuBar()
+        //setupNavigationButtons()
         
     }
     
@@ -118,7 +121,11 @@ class Map: UIViewController , MKMapViewDelegate {
             print("didn't record coordinates")
         }
         else{
-            self.performSegue(withIdentifier: "mainSegue", sender: self)
+            if let vc = cooDelegate{
+                (vc as! SectionViewController).didChooseCoordinateFromMap(coordinate: Coordinate(lng: lastLng, lat: lastLat, address: lastAddress))
+                (vc as! SectionViewController).scrollToMenuItem(menuIndex: 0)
+            }
+
         }
         
     }
@@ -134,11 +141,6 @@ class Map: UIViewController , MKMapViewDelegate {
         }
     }
     
-    @IBAction func cancelBtn(_ sender: Any) {
-        lastLat = "default"
-        lastLng = "default"
-        self.performSegue(withIdentifier: "mainSegue", sender: self)
-    }
     
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation){
         mapView.centerCoordinate = userLocation.location!.coordinate
@@ -159,6 +161,37 @@ class Map: UIViewController , MKMapViewDelegate {
         button.layer.shadowRadius = 2
         button.layer.shadowOpacity = 0.5
         button.layer.shadowOffset = CGSize(width: 0, height: 0)
+        
+    }
+    
+    private func setupNavigationButtons(){
+        var dotsImage = UIImage(named: "3dots")?.withRenderingMode(.alwaysOriginal)
+        dotsImage = UIImage.resizeImage(image: dotsImage! , newWidth: 20)
+        let dots = UIBarButtonItem(image: dotsImage , style: .plain, target: self, action: #selector(optionsMenuAction))
+        navigationItem.rightBarButtonItem = dots
+        
+    }
+    
+    let settingsLauncher = SettingsLauncher()
+    
+    @objc func optionsMenuAction(){
+        settingsLauncher.showSettings()
+    }
+    
+    var menuBar: MenuBar? = nil
+    
+    private func setupMenuBar(){
+        
+        // add menu bar and constraints for menu bar
+        menuBar = MenuBar()
+        
+        view.addSubview(self.menuBar!)
+        
+        
+        view.addConstraintsWithFormat(format: "H:|[v0]|", views: self.menuBar!)
+        view.addConstraintsWithFormat(format: "V:|[v0(30)]|", views: self.menuBar!)
+        
+        
         
     }
     

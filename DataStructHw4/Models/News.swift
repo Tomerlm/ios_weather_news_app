@@ -8,13 +8,13 @@
 
 import Foundation
 class News{
-    var headline: String = ""
+    var source: String = ""
     var description: String = ""
     var imageUrl: String = ""
     var webUrl: String = ""
     
-    init(headline: String , description: String , imageUrl: String , webUrl: String){
-        self.headline = headline
+    init(source: String , description: String , imageUrl: String , webUrl: String){
+        self.source = source
         self.description = description
         self.imageUrl = imageUrl
         self.webUrl = webUrl

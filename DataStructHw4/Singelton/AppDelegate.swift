@@ -19,6 +19,26 @@ import CoreLocation
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+        let vc = SectionViewController()
+        let nav = MainNavigationViewController(rootViewController: vc)
+        window?.rootViewController = nav
+        
+        UINavigationBar.appearance().barTintColor = UIColor.rgb(red: 30, green: 30, blue: 180)
+        
+        // get rid of shadow under nav bar
+        UINavigationBar.appearance().shadowImage = UIImage()
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
+        
+        application.statusBarStyle = .lightContent
+        let statusBarBackgroundView = UIView()
+        statusBarBackgroundView.backgroundColor = UIColor.rgb(red: 10, green: 10, blue: 180)
+        window?.addSubview(statusBarBackgroundView)
+        window?.addConstraintsWithFormat(format: "H:|[v0]", views: statusBarBackgroundView)
+        window?.addConstraintsWithFormat(format: "V:|[v0(20)]", views: statusBarBackgroundView)
+        
+        
         locationManager = CLLocationManager()
         locationManager?.requestWhenInUseAuthorization()
         return true

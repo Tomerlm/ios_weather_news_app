@@ -21,8 +21,7 @@ class ReportViewController: UIViewController , UITextViewDelegate{
         setViewLayout(view: greenView)
         setViewLayout(view: redView)
         problemTextView.delegate = self
-        //redView.frame.size = CGSize(width: redView.frame.width, height: .infinity)
-        //greenView.frame.size = CGSize(width: greenView.frame.width, height: .infinity)
+
         redMinHeight = redViewHeight.constant
         greenMinHeight = greenViewHeight.constant
 
@@ -63,9 +62,6 @@ class ReportViewController: UIViewController , UITextViewDelegate{
         }
     }
 
-    @IBAction func reportToMainSegue(_ sender: Any) {
-       // self.performSegue(withIdentifier: "reportToMain", sender: self)
-    }
     
     func setTextViewLayout(textView: UITextView){
         

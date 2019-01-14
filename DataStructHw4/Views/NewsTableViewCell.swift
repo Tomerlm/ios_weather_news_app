@@ -40,20 +40,20 @@ class NewsTableViewCell: UITableViewCell {
         let imageUrl = URL(string: news?.imageUrl ?? "")
         self.newImageView.kf.setImage(with: imageUrl, completionHandler: {
             (image, error, cacheType, imageUrl) in
+            
             if (image == nil || error != nil){
                 print("error getting image")
             }
             else{
                 DispatchQueue.main.async {
-                    print("downloaded image from url: \(self.news?.imageUrl)")
-
+                    print("image for: \(String(describing: self.newsHeadlineLabel.text)) is cached in \(cacheType)")
                 }
                 
             }
             
         })
         
-        newsHeadlineLabel?.text = news?.headline
+        newsHeadlineLabel?.text = news?.source
         newsDescriptionLabel?.text = news?.description
         
         
@@ -85,7 +85,7 @@ class NewsTableViewCell: UITableViewCell {
     
     @objc func imageViewTapped(sender: UITapGestureRecognizer) {
         
-        guard let imageView = sender.view as? UIImageView
+        guard (sender.view as? UIImageView) != nil
             else { return }
         if let urlString = self.news?.webUrl{
             guard let url = URL(string: urlString) else { return }
